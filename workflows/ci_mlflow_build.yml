@@ -1,0 +1,38 @@
+name: CI Workflow MLflow Artifacts
+
+on:
+  push:
+    branches:
+      - main # Ganti dengan nama branch utama repositori Anda (misal: master)
+  pull_request:
+    branches:
+      - main # Ganti dengan nama branch utama repositori Anda
+
+jobs:
+  build_and_save_artifacts:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9' # Sesuaikan dengan versi Python di conda.yaml
+
+    - name: Install MLflow
+      run: pip install mlflow
+
+    - name: Run MLflow Project
+      run: |
+        cd MLproject # Masuk ke direktori MLproject
+        mlflow run . --env-manager=conda # Jalankan MLproject di direktori saat ini
+
+    # Langkah untuk menyimpan mlruns ke repositori GitHub yang sama (Skilled)
+    - name: Save mlruns to repo
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git add MLproject/mlruns/ # Tambahkan folder mlruns dari dalam MLproject
+        git commit -m "Save MLflow artifacts from CI run" || true   # `|| true` agar tidak gagal jika tidak ada perubahan
+        git push origin HEAD # Push ke branch saat ini
