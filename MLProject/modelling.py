@@ -15,8 +15,8 @@ if __name__ == "__main__":
 
     # Load preprocessed data (assuming these files are in MLproject/ folder)
     # Adjust path if necessary
-    X_processed = pd.read_csv('preprocessing/telco_customer_churn_preprocessed_X.csv')
-    y_encoded = pd.read_csv('preprocessing/telco_customer_churn_preprocessed_y.csv')['Churn_Encoded']
+    X_processed = pd.read_csv('telco_customer_churn_preprocessed_X.csv')
+    y_encoded = pd.read_csv('telco_customer_churn_preprocessed_y.csv')['Churn_Encoded']
 
     X_train, X_test, y_train, y_test = train_test_split(
         X_processed, y_encoded, test_size=0.2, random_state=42, stratify=y_encoded
