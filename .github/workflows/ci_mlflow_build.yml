@@ -25,7 +25,7 @@ jobs:
 
     - name: Run MLflow Project
       run: |
-        cd MLProject/MLproject # Masuk ke direktori MLproject
+        cd MLProject # Masuk ke direktori MLproject
         mlflow run . --env-manager=conda # Jalankan MLproject di direktori saat ini
 
     # Langkah untuk menyimpan mlruns ke repositori GitHub yang sama (Skilled)
