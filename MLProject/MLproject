@@ -1,4 +1,4 @@
-name: mlflow-env
+name:  telco-churn-mlproject
 conda_env: conda.yaml
 entry_points:
   main:
