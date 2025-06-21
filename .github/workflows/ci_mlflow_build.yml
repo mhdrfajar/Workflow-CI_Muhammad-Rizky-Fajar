@@ -26,10 +26,9 @@ jobs:
     - name: Run MLflow Project
       run: |
         cd MLProject
-        conda init bash
-        source ~/.bashrc
-        conda activate mlflow-env
-        mlflow run . --env-manager=conda
+        conda install -y conda
+        conda env create -f environment.yml -n mlflow-env
+        conda run -n mlflow-env mlflow run . --env-manager=conda
 
     # Langkah untuk menyimpan mlruns ke repositori GitHub yang sama (Skilled)
     - name: Save mlruns to repo
