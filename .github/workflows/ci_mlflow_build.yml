@@ -27,7 +27,7 @@ jobs:
       run: |
         cd MLProject
         conda install -y conda
-        conda env create -f environment.yml -n mlflow-env
+        conda env create -f python_env.yaml -n mlflow-env
         conda run -n mlflow-env mlflow run . --env-manager=conda
 
     # Langkah untuk menyimpan mlruns ke repositori GitHub yang sama (Skilled)
