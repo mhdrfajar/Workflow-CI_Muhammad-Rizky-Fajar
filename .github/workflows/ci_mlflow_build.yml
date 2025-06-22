@@ -3,38 +3,79 @@ name: CI Workflow MLflow Artifacts
 on:
   push:
     branches:
-      - main 
+      - main
   pull_request:
     branches:
-      - main 
+      - main
+
+env:
+  FEATURES_CSV_URL: "MLProject/telco_customer_churn_preprocessed_X.csv"
+  TARGET_CSV_URL: "MLProject/telco_customer_churn_preprocessed_y.csv"
+  TARGET_VAR: "Churn_Encoded"  # You can adjust if "Personality" is the target in your y dataset
 
 jobs:
-  build_and_save_artifacts:
+  build:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v3
+      # Check out the repository under $GITHUB_WORKSPACE
+      - uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.12.7 # Sesuaikan dengan versi Python di conda.yaml
+      # Setup Python 3.12.7
+      - name: Set up Python 3.12.7
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12.7"
+      
+      # Check Environment Variables
+      - name: Check Env
+        run: |
+          echo $FEATURES_CSV_URL
+          echo $TARGET_CSV_URL
 
-    - name: Install MLflow
-      run: pip install mlflow
+      # Install dependencies (including MLflow, Dagshub, and other necessary libraries)
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install mlflow dagshub feature-engine pandas scikit-learn
 
-    - name: Run MLflow Project
-      run: |
-        cd MLProject
-        conda install -y conda
-        conda env create -f python_env.yaml -n mlflow-env --channel conda-forge
-        conda run -n mlflow-env mlflow run . --env-manager=conda
+      # Run the MLflow project
+      - name: Run mlflow project
+        run: |
+          mlflow run MLProject --env-manager=local
 
-    # Langkah untuk menyimpan mlruns ke repositori GitHub yang sama (Skilled)
-    - name: Save mlruns to repo
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git add MLproject/mlruns/ # Tambahkan folder mlruns dari dalam MLproject
-        git commit -m "Save MLflow artifacts from CI run" || true # `|| true` agar tidak gagal jika tidak ada perubahan
-        git push origin HEAD # Push ke branch saat ini
+      # Get latest run_id
+      - name: Get latest MLflow run_id
+        run: |
+          RUN_ID=$(ls -td mlruns/0/*/ | head -n 1 | cut -d'/' -f3)
+          echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
+          echo "Latest run_id: $RUN_ID"
+
+      # Upload Confusion Matrix to GitHub Artifacts
+      - name: Upload confusion matrix artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: trained-model-artifacts
+          path: MLProject/conf_matrix.png
+
+      # Build Docker Model
+      - name: Build Docker Model
+        run: |
+          mlflow models build-docker --model-uri "runs:/$RUN_ID/model" --name "msml" 
+
+      # Login to Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      # Tag the Docker image
+      - name: Tag Docker Image
+        run: |
+          docker tag msml ${{ secrets.DOCKER_HUB_USERNAME }}/msml:latest
+
+      # Push Docker image to Docker Hub
+      - name: Push Docker Image
+        run: |
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/msml:latest
