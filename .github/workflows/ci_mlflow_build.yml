@@ -11,8 +11,8 @@ on:
 env:
   FEATURES_CSV_URL: "MLProject/telco_customer_churn_preprocessed_X.csv"
   TARGET_CSV_URL: "MLProject/telco_customer_churn_preprocessed_y.csv"
-  TARGET_VAR: "Churn_Encoded"  # You can adjust if "Personality" is the target in your y dataset
-
+  TARGET_VAR: "Churn_Encoded"
+  
 jobs:
   build:
     runs-on: ubuntu-latest
