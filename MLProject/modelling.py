@@ -70,8 +70,6 @@ if __name__ == "__main__":
             input_example=X_test.iloc[:5]
         )
 
-        mlflow.log_params(model.named_steps["classifier"].get_params())
-
         fig, ax = plt.subplots()
         ConfusionMatrixDisplay.from_estimator(model, X_test, y_test, ax=ax)
         plt.savefig("conf_matrix.png")
