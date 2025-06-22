@@ -13,11 +13,19 @@ if __name__ == "__main__":
     # --- MLflow Setup (Local for CI build, artifacts saved to mlruns/ in repo) ---
     # MLflow will save artifacts to ./mlruns/ relative to where mlflow run is executed
     mlflow.set_experiment("Telco Churn Prediction - CI Workflow")
+    
+    file_path1 = sys.argv[4] if len(sys.argv) > 3 else os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "MLProject/telco_customer_churn_preprocessed_X.csv")
 
+    file_path2 = sys.argv[4] if len(sys.argv) > 3 else os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "MLProject/telco_customer_churn_preprocessed_y.csv")
+    
     # Load preprocessed data (assuming these files are in MLproject/ folder)
     # Adjust path if necessary
-    X_processed = pd.read_csv('preprocessing/telco_customer_churn_preprocessed_X.csv')
-    y_encoded = pd.read_csv('preprocessing/telco_customer_churn_preprocessed_y.csv')['Churn_Encoded']
+    X_processed = pd.read_csv(file_path1)
+    y_encoded = pd.read_csv(file_path2)
 
     X_train, X_test, y_train, y_test = train_test_split(
         X_processed, y_encoded, test_size=0.2, random_state=42, stratify=y_encoded
