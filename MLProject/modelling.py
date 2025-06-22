@@ -10,14 +10,10 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report, ConfusionMatrixDisplay
 
 if __name__ == "__main__":
-    # --- MLflow Setup (Local for CI build, artifacts saved to mlruns/ in repo) ---
-    mlflow.set_experiment("Telco Churn Prediction - CI Workflow")
+    warnings.filterwarnings("ignore")
     
-    features_path = os.getenv("FEATURES_CSV_URL")
-    target_path = os.getenv("TARGET_CSV_URL")
-    
-    print(f"Reading features from: {features_path}")
-    print(f"Reading target from: {target_path}")
+    features_path = sys.argv[3] if len(sys.argv) > 2 else os.path.join(os.path.dirname(os.path.abspath(__file__)), "telco_customer_churn_preprocessed_X.csv")
+    target_path = sys.argv[4] if len(sys.argv) > 3 else os.path.join(os.path.dirname(os.path.abspath(__file__)), "telco_customer_churn_preprocessed_y.csv")
     
     X_processed = pd.read_csv(features_path)
     y_encoded = pd.read_csv(target_path)
