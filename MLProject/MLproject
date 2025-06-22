@@ -2,4 +2,7 @@ name:  telco-churn-mlproject
 conda_env: conda.yaml
 entry_points:
   main:
-    command: "python modelling.py"
+    parameters:
+      C: {type: int, default: 1.0}
+      solver: {type: string, default: "liblinear"}
+    command: "python modelling.py {C} {solver}"
