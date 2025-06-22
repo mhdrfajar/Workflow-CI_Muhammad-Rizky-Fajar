@@ -5,4 +5,6 @@ entry_points:
     parameters:
       C: {type: int, default: 1.0}
       solver: {type: string, default: "liblinear"}
-    command: "python modelling.py {C} {solver}"
+      features_path: {type: string, default: "telco_customer_churn_preprocessed_X.csv"}
+      target_path: {type: string, default: "telco_customer_churn_preprocessed_y.csv"}
+    command: "python modelling.py {C} {solver} {features_path} {target_path}"
