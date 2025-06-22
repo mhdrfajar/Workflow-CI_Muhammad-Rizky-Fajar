@@ -1,4 +1,4 @@
-name: CI Workflow MLflow Artifacts
+name: CI Workflow MLflow
 
 on:
   push:
