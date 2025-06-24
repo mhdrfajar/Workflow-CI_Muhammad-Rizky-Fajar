@@ -57,6 +57,13 @@ jobs:
         with:
           name: trained-model-artifacts
           path: MLProject/conf_matrix.png
+          
+      # Upload input example to GitHub Artifacts
+      - name: Upload input example artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: input-example-artifact
+          path: MLProject/input_example.csv
 
       # Build Docker Model
       - name: Build Docker Model
