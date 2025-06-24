@@ -51,7 +51,7 @@ jobs:
           # Look for the line containing "Running command" and "run with ID"
           RUN_ID=$(echo "$MLFLOW_OUTPUT" | grep "Running command" | awk -F"ID '" '{print $2}' | awk -F"'" '{print $1}')
           
-          echo "::set-output name=run_id::$RUN_ID" # Set the run_id as a step output
+          echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT  # Set the run_id as a step output
           echo "Captured run_id: $RUN_ID"
 
       # Get latest run_id (using the captured run ID from the previous step)
