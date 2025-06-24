@@ -39,19 +39,26 @@ jobs:
           python -m pip install --upgrade pip
           pip install mlflow dagshub feature-engine pandas scikit-learn
 
-      # Run the MLflow project
-      - name: Run mlflow project
+      # Run the MLflow project and capture the run ID
+      - name: Run mlflow project and capture run ID
+        id: mlflow_run # Add an ID to this step to reference its outputs
         run: |
-          mlflow run MLProject --env-manager=local
+          # Run MLflow project and capture its output
+          MLFLOW_OUTPUT=$(mlflow run MLProject --env-manager=local 2>&1)
+          echo "$MLFLOW_OUTPUT"
+          
+          # Extract the run ID using grep and awk
+          # Look for the line containing "Running command" and "run with ID"
+          RUN_ID=$(echo "$MLFLOW_OUTPUT" | grep "Running command" | awk -F"ID '" '{print $2}' | awk -F"'" '{print $1}')
+          
+          echo "::set-output name=run_id::$RUN_ID" # Set the run_id as a step output
+          echo "Captured run_id: $RUN_ID"
 
-      # Get latest run_id
+      # Get latest run_id (using the captured run ID from the previous step)
       - name: Get latest MLflow run_id
         run: |
-          # Find the latest MLflow run directory within mlruns/0/ and extract its name (which is the RUN_ID)
-          # The 'mlruns/0/' directory contains subdirectories named after the run IDs.
-          RUN_ID=$(find mlruns/0/ -maxdepth 1 -mindepth 1 -type d -printf '%T@ %f\n' | sort -n | tail -1 | awk '{print $2}')
-          echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
-          echo "Latest run_id: $RUN_ID"
+          echo "RUN_ID=${{ steps.mlflow_run.outputs.run_id }}" >> $GITHUB_ENV
+          echo "Latest run_id: ${{ steps.mlflow_run.outputs.run_id }}"
 
       # Upload Confusion Matrix to GitHub Artifacts
       - name: Upload confusion matrix artifact
