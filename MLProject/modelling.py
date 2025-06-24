@@ -10,6 +10,9 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report, ConfusionMatrixDisplay
 
+# Mengaktifkan autolog untuk MLflow
+mlflow.sklearn.autolog()
+
 if __name__ == "__main__":
     
     features_path = sys.argv[3] if len(sys.argv) > 2 else os.path.join(os.path.dirname(os.path.abspath(__file__)), "telco_customer_churn_preprocessed_X.csv")
